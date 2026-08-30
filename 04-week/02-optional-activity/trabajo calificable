@@ -1,0 +1,61 @@
+# Actividad Calificable - Corte 1: Diagnóstico de Datos de un Proceso
+
+**Estudiante:** Juan David Celly 
+**Asignatura:** Ciencia de Datos | Periodo 2026-B  
+**Programa:** Ingeniería Mecatrónica  
+
+---
+
+## 1. Problema Real y Pregunta de Datos
+
+* **Sector:** Entretenimiento Digital / Servicios de Streaming de Audio (Spotify).
+* **Problema:** La plataforma enfrenta una tasa de cancelación (churn) de usuarios Premium tras periodos de inactividad paulatina o al finalizar promociones de prueba, lo que disminuye el valor del tiempo de vida del cliente (CLV) y genera pérdidas millonarias en ingresos recurrentes.
+* **Pregunta de datos:** ¿Cuál es la probabilidad de que un usuario con suscripción Premium cancele su servicio en los próximos 30 días, considerando su historial de reproducción, hábitos de interacción y comportamiento durante los primeros 45 días de uso?
+
+---
+
+## 2. Inventario de Datos (Fuentes y Clasificación)
+
+| Fuente / Campo | Descripción y Formato | Clasificación |
+| :--- | :--- | :--- |
+| **1. Registro de Usuarios y Suscripciones** | Registro relacional en PostgreSQL con ID de usuario, país, plan contratado, método de pago y fecha de registro. | `Estructurado` |
+| **2. Eventos de Reproducción (Stream Logs)** | Telemetría en tiempo real sobre canciones escuchadas, tiempo de reproducción, pausas y saltos, consumidos mediante API en formato JSON. | `Semiestructurado` |
+| **3. Pistas de Audio y Podcasts** | Archivos binarios de audio (.mp3 / .ogg) almacenados en servidores de contenido para análisis de características acústicas. | `No estructurado` |
+| **4. Metadatos de Listas de Reproducción** | Archivos JSON / NoSQL con información de géneros, artistas, nombres de playlists y etiquetas creadas por el usuario. | `Semiestructurado` |
+| **5. Tickets y Mensajes de Soporte** | Texto libre extraído del centro de ayuda, reseñas en tiendas de aplicaciones (App Store / Google Play) y encuestas NPS. | `No estructurado` |
+| **6. Historial de Facturación y Cobros** | Tablas de transacciones financieras con fechas de pago, fallos de cobro en tarjeta y renovación de ciclos de facturación. | `Estructurado` |
+
+---
+
+## 3. Tipo de Analítica y Justificación de Big Data
+
+### Tipo de Analítica
+* **Clasificación:** Analítica **Predictiva** (con componentes de Analítica **Prescriptiva** para decisiones de fidelización).
+* **Justificación:** Se analizan patrones históricos de escucha y hábitos de uso para predecir la probabilidad futura de cancelación. A partir de esta predicción, el sistema prescribe automáticamente recomendaciones musicales personalizadas u ofertas promocionales de retención.
+
+### Justificación de Big Data ("Las V")
+1. **Velocidad:** La telemetría de eventos de escucha se transmite en tiempo real a través de arquitecturas como Apache Kafka con latencia de milisegundos.
+2. **Variedad:** Se procesa información heterogénea: datos relacionales (facturación), semiestructurados (logs JSON de reproducción) y no estructurados (archivos de audio y texto de soporte).
+3. **Valor:** Permite activar campañas de retención tempranas que reducen el churn en un porcentaje crítico, salvaguardando los ingresos por suscripción mensual.
+
+---
+
+## 4. Ciclo de Vida del Proyecto
+
+```text
+[1. Pregunta]   -> ¿Cuál es la probabilidad de que un usuario Premium cancele su suscripción en los próximos 30 días?
+      |
+      v
+[2. Obtener]    -> Extracción de logs de reproducción (JSON), tablas de facturación en PostgreSQL y texto de tickets.
+      |
+      v
+[3. Limpiar]    -> Filtrado de reproducciones accidentales (<30 seg), imputación de nulos y normalización de textos.
+      |
+      v
+[4. Analizar]   -> Entrenamiento de modelos de clasificación (XGBoost / Random Forest) para calcular el score de churn.
+      |
+      v
+[5. Visualizar] -> Presentación de indicadores de riesgo de cancelación y patrones de escucha en un Dashboard de producto.
+      |
+      v
+[6. Decidir]    -> Activación automática de notificaciones push, playlist personalizadas o descuentos de retención.
